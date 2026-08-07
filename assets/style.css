@@ -404,6 +404,7 @@ header {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        order: 2;
     }
 
     #toggle-box-title {
@@ -417,9 +418,6 @@ header {
         padding: 0.25rem 0.75rem;
         background: rgba(26, 35, 126, 0.1);
         border-radius: 20px;
-    }
-     #toggle-box {
-       order: 2;
     }
      #calendar {
        order: 1;
