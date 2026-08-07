@@ -418,6 +418,12 @@ header {
         background: rgba(26, 35, 126, 0.1);
         border-radius: 20px;
     }
+     #toggle-box {
+       order: 2;
+    }
+     #calendar {
+       order: 1;
+     }
 }
 
 @media (max-width: 768px) {
