@@ -368,6 +368,9 @@
         console.log(city);
         cityInput.val('');
         if (city === '') {
+            addWeatherToCalendar([]); //Clears the weather if the search is empty
+            localStorage.removeItem('lastCity'); //Clears the last city if the search is empty
+            currentCityEl.text(''); //Clears the current city display if the search is empty
             return; //Prevents searching if search is empty
         }
 
