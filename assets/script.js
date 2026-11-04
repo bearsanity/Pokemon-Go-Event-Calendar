@@ -236,15 +236,15 @@ $(() => { //jquery reads this as the same way as document.addEventListener('DOMC
         }
     };
 
+    //Shows or hides every PoGo event type by reusing the single-type toggle
     function setAllEventsDisplay(show) {
-        calendar.batchRendering(() => {
-            calendar.getEvents().forEach(event => {
-                if (event.extendedProps.eventType !== 'weather') return; // Skip weather events
-                event.setProp('display', show ? 'block' : 'none');
-
-            });
+        $('.event-toggle').each(function () {
+            //Only flip the types that aren't already in the state we want
+            if (this.checked !== show) {
+                this.checked = show;
+                toggleEventDisplay(this.id); //Each checkbox's id is its event type
+            }
         });
-        $('.event-toggle').prop('checked', show);
     }
 
 
