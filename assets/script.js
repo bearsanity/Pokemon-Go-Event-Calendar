@@ -318,15 +318,16 @@ $(() => { //jquery reads this as the same way as document.addEventListener('DOMC
             labelBoxPairDiv.append(label);
             labelBoxPairDiv.append(toggle);
             container.append(labelBoxPairDiv);
-            const toggleAllButton = $('<button>')
-                .text('Toggle All')
-                .attr('id', 'toggle-all-button')
-                .on('click', () => {
-                    const allChecked = $('.event-toggle').length === $('.event-toggle:checked').length;
-                    setAllEventsDisplay(!allChecked);
-                });
-            container.append(toggleAllButton);
+
         })
+        const toggleAllButton = $('<button>')
+            .text('Toggle All')
+            .attr('id', 'toggle-all-button')
+            .on('click', () => {
+                const allChecked = $('.event-toggle').length === $('.event-toggle:checked').length;
+                setAllEventsDisplay(!allChecked);
+            });
+        container.append(toggleAllButton);
     };
 
     //Feeds the api info into the render functions then calls them
