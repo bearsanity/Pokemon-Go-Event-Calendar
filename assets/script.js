@@ -1,39 +1,39 @@
- $(() => { //jquery reads this as the same way as document.addEventListener('DOMContentLoaded', () => {
-  "use strict";
-   
+$(() => { //jquery reads this as the same way as document.addEventListener('DOMContentLoaded', () => {
+    "use strict";
+
     //==========================================================================================
     //--------   API Urls + Keys    ---------
     //==========================================================================================
-    
+
     const apiKey = 'e26922b5bf8ae6d46c0de5695047bfd2';
     //const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
     //const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
     //const duckUrl = 'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/events.min.json';
 
 
-    
-    
-    
+
+
+
     //==========================================================================================
     //--------   Hooks into page   ---------
     //==========================================================================================
-    
+
     const updateButton = $('#update-button');
     const cityInput = $('#city-input');
     var calendarEl = document.getElementById('calendar');
     let calendar; //Defined as null, to be updated with renderCalendar. Defined here so it can be accessed by other functions
     const currentCityEl = $('#current-city');
-    
-    
-    
-    
+
+
+
+
     //==========================================================================================
     //--------   PoGo Event Functions    ---------
     //==========================================================================================
-    
+
     //List of the event types I don't want to display by default
     const eventsOffByDefault = ['research', 'go-pass', 'go-battle-league', 'season', 'pokemon-go-tour', 'city-safari'];
-    
+
     //Setting colours for the events. With extra colors incase new events are added in the future
     const eventColors = {
         'city-safari': '#f0c297',
@@ -69,19 +69,19 @@
             if (!response.ok) {
                 throw new Error('Invalid response from server');
             }
-        const rawEvents = await response.json();
-        console.log('All events:', rawEvents);
-        return rawEvents;
-        
-        } catch(err) {            
+            const rawEvents = await response.json();
+            console.log('All events:', rawEvents);
+            return rawEvents;
+
+        } catch (err) {
             alert('There was an getting the events.');
             console.error(err);
         };
     };
-    
+
     //This maps the raw data to an array the Calender can read
     function mapRawEvents(rawEvents) {
-        const calenderEvents = rawEvents.map(event =>({
+        const calenderEvents = rawEvents.map(event => ({
             title: event.name,
             start: event.start,
             end: event.end,
@@ -89,7 +89,7 @@
             order: 999,
             eventType: event.eventType,
             //turns the display off for the events I want off by default - ternary operator
-            display: eventsOffByDefault.includes(event.eventType) ? 'none' : 'block', 
+            display: eventsOffByDefault.includes(event.eventType) ? 'none' : 'block',
             backgroundColor: eventColors[event.eventType],
             borderColor: eventColors[event.eventType],
         }));
@@ -104,32 +104,32 @@
         const uniqueEventTypes = new Set(eventTypes);
         const uniqueEventTypesUnsorted = [...uniqueEventTypes];
         const uniqueEventTypesArray = uniqueEventTypesUnsorted.sort();
-        return uniqueEventTypesArray; 
+        return uniqueEventTypesArray;
     };
 
 
 
-    
-    
+
+
     //==========================================================================================
     //--------   Weather Functions    ---------
     //==========================================================================================
-    
+
     //Saving the search to localstorage
     function saveCityToHistory(city) {
         localStorage.setItem('lastCity', city);
     };
-    
+
     //gets location coordinates for getWeather
-    async function getCoordinates(city){
-        try { 
+    async function getCoordinates(city) {
+        try {
             const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
             const response = await fetch(geoUrl);
-            
+
             if (!response.ok) {
                 throw new Error("Bad response from server");
             }
-            
+
             const data = await response.json();
             console.log('Data:', data); //console.log to see that it's working
 
@@ -138,8 +138,8 @@
                 alert('City not found. Please try searching again.');
                 return;
             }
-        
-        //limit = 1 in the api means only 1 result is returned, but it always returns an array so data[0] is necessary
+
+            //limit = 1 in the api means only 1 result is returned, but it always returns an array so data[0] is necessary
             const latitude = data[0].lat;
             const longitude = data[0].lon;
 
@@ -148,7 +148,7 @@
 
 
             return {
-                lat: latitude, 
+                lat: latitude,
                 lon: longitude,
                 name: data[0].name,
                 state: data[0].state,
@@ -160,7 +160,7 @@
             console.error(err);
         }
     };
-    
+
     //To be called after getCoordinates has retrieved the coordinates of the city
     async function getWeather(latitude, longitude) {
         const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
@@ -173,13 +173,13 @@
             const data = await response.json();
             console.log('Weather data:', data);
             return data;
-        
-        } catch(err) {
+
+        } catch (err) {
             alert('There was an error finding the weather.');
             console.error(err);
         };
     };
-    
+
     //Gets 5 day forecast in event object form so the calendar can read it
     function getWeatherEvents(weatherInfo) {
         //These indices give current and then the next 5 days around the same time of day
@@ -187,9 +187,9 @@
         const weatherEvents = indices.map(i => {
             const dayData = weatherInfo.list[i];
             if (!dayData) {
-                return null; 
+                return null;
             }
-            
+
             return {
                 eventType: 'weather',
                 //Calendar needs date in ISO form
@@ -213,12 +213,12 @@
         //This clears out old weather events if someone is trying to change location
         var events = calendar.getEvents();
         for (let i = 0; i < events.length; i++) {
-            if (events[i].extendedProps.eventType === 'weather') { 
-               events[i].remove();
+            if (events[i].extendedProps.eventType === 'weather') {
+                events[i].remove();
             }
         };
         weatherEvents.forEach((event) => {
-        calendar.addEvent(event)
+            calendar.addEvent(event)
         });
     };
 
@@ -227,22 +227,23 @@
         var events = calendar.getEvents();
         for (let i = 0; i < events.length; i++) {
             if (events[i].extendedProps.eventType === eventToRemove) { //Because eventTypes is a custom property, the calendar saves it under extendedProps
-               if (events[i].display === 'none') {
+                if (events[i].display === 'none') {
                     events[i].setProp('display', 'block'); //Set prop is the calendar method to change a property
-                }   else {events[i].setProp('display', 'none');
-                    }
+                } else {
+                    events[i].setProp('display', 'none');
+                }
             }
         }
     };
 
-   
-   
+
+
     //==========================================================================================
     //--------   Render Functions    ---------
     //==========================================================================================
-    
+
     //Calendar from FullCalendar
-    function renderCalendar(events){
+    function renderCalendar(events) {
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             events: events,
@@ -252,10 +253,11 @@
             height: 'auto',
             //Tells the calendar to use the order property I set, in this order of importance
             eventOrder: 'order,start,-duration,allDay,title',
-            eventContent: function(arg) {
+            eventContent: function (arg) {
                 if (arg.event.extendedProps.eventType === 'weather') {
                     const weather = arg.event.extendedProps;
-                    return { html: `
+                    return {
+                        html: `
                         <div class="weather-card">
                         <img src="https://openweathermap.org/img/wn/${weather.icon}@2x.png" alt="weather icon">
                         <p>${weather.temp}°C</p>
@@ -264,31 +266,33 @@
                         </div>
                     `};
                 }
-            // For regular PoGo events, render the time and title
-            return { html: `<span class="fc-event-time">${arg.timeText}</span> <span class="fc-event-title">${arg.event.title}</span>` };
+                // For regular PoGo events, render the time and title
+                return { html: `<span class="fc-event-time">${arg.timeText}</span> <span class="fc-event-title">${arg.event.title}</span>` };
             },
-            eventClick: function(info) {
-            info.jsEvent.preventDefault(); // Url opens a new tab
-            if (info.event.url) {
-                window.open(info.event.url);
-        }}});
-        
+            eventClick: function (info) {
+                info.jsEvent.preventDefault(); // Url opens a new tab
+                if (info.event.url) {
+                    window.open(info.event.url);
+                }
+            }
+        });
+
         calendar.render();
     };
 
     //Render the toggle box with checkboxes and the corresponding label
-    function renderToggleBox(uniqueEvents){
+    function renderToggleBox(uniqueEvents) {
         const container = $('#toggle-box');
         container.empty();
         const span = $('<span>')
             .text('Choose which events to display')
             .attr('id', 'toggle-box-title');
         container.append(span);
-        uniqueEvents.forEach(event =>{
+        uniqueEvents.forEach(event => {
             const toggle = $('<input>')
                 .attr('type', 'checkbox')
                 .addClass('event-toggle')
-                .attr('id',`${event}`)
+                .attr('id', `${event}`)
                 .on('click', () => {
                     toggleEventDisplay(event);
                 })
@@ -296,7 +300,7 @@
                 .prop('checked', eventsOffByDefault.includes(event) ? false : true);
             const label = $('<label>')
                 .text(event.replaceAll('-', ' '))
-                .attr('for',`${event}`);
+                .attr('for', `${event}`);
             //appending them to a div inside the container so the pairs can be styled together
             const labelBoxPairDiv = $('<div>');
             labelBoxPairDiv.addClass('toggle-box-div');
@@ -307,8 +311,8 @@
     };
 
     //Feeds the api info into the render functions then calls them
-    async function initializeApp() {    
-        const rawEvents = await getRawEvents();        
+    async function initializeApp() {
+        const rawEvents = await getRawEvents();
         const events = mapRawEvents(rawEvents);
         const uniqueEvents = getUniqueEventTypes(rawEvents);
 
@@ -319,16 +323,16 @@
         const lastCity = localStorage.getItem('lastCity');
 
         if (lastCity) {
-        const coordinates = await getCoordinates(lastCity);
-        const weather = await getWeather(coordinates.lat, coordinates.lon);
-        const weatherEvents = getWeatherEvents(weather);
-        addWeatherToCalendar(weatherEvents);
-        
-        //Ternary operator to make the display work even if there is no state given
-        const locationText = coordinates.state 
-        ? `${coordinates.name}, ${coordinates.state}, ${coordinates.country}`
-        : `${coordinates.name}, ${coordinates.country}`;
-        currentCityEl.text(locationText);
+            const coordinates = await getCoordinates(lastCity);
+            const weather = await getWeather(coordinates.lat, coordinates.lon);
+            const weatherEvents = getWeatherEvents(weather);
+            addWeatherToCalendar(weatherEvents);
+
+            //Ternary operator to make the display work even if there is no state given
+            const locationText = coordinates.state
+                ? `${coordinates.name}, ${coordinates.state}, ${coordinates.country}`
+                : `${coordinates.name}, ${coordinates.country}`;
+            currentCityEl.text(locationText);
         }
     };
 
@@ -343,6 +347,9 @@
         console.log(city);
         cityInput.val('');
         if (city === '') {
+            addWeatherToCalendar([]); //Clears the weather if the search is empty
+            localStorage.removeItem('lastCity'); //Clears the last city if the search is empty
+            currentCityEl.text(''); //Clears the current city display if the search is empty
             return; //Prevents searching if search is empty
         }
 
@@ -351,11 +358,11 @@
         const weatherEvents = getWeatherEvents(weather);
         addWeatherToCalendar(weatherEvents);
         saveCityToHistory(coordinates.name);
-        
+
         //Ternary operatory to make the display work even if there is no state given
-        const locationText = coordinates.state 
-        ? `${coordinates.name}, ${coordinates.state}, ${coordinates.country}`
-        : `${coordinates.name}, ${coordinates.country}`;
+        const locationText = coordinates.state
+            ? `${coordinates.name}, ${coordinates.state}, ${coordinates.country}`
+            : `${coordinates.name}, ${coordinates.country}`;
         currentCityEl.text(locationText);
     });
 
@@ -379,16 +386,16 @@
         const weatherEvents = getWeatherEvents(weather);
         addWeatherToCalendar(weatherEvents);
         saveCityToHistory(coordinates.name);
-        
+
         //Ternary operatory to make the display work even if there is no state given
-        const locationText = coordinates.state 
-         ? `${coordinates.name}, ${coordinates.state}, ${coordinates.country}`
-         : `${coordinates.name}, ${coordinates.country}`;
+        const locationText = coordinates.state
+            ? `${coordinates.name}, ${coordinates.state}, ${coordinates.country}`
+            : `${coordinates.name}, ${coordinates.country}`;
         currentCityEl.text(locationText);
     });
 
     // Navbar burger toggle for mobile
-    $('.navbar-burger').on('click', function() {
+    $('.navbar-burger').on('click', function () {
         $('.navbar-burger').toggleClass('is-active');
         $('.navbar-menu').toggleClass('is-active');
     });
